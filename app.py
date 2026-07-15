@@ -258,8 +258,8 @@ elif mode == "Live Signals":
 
                     latest = df.iloc[-1]
                     prev = df.iloc[-2]
-                    signal_row = df_signals.iloc[-2]
-                    prev_signal = df_signals.iloc[-3] if len(df_signals) > 2 else None
+                    signal_row = df_signals.iloc[-1]
+                    prev_signal_row = df_signals.iloc[-2]
 
                     current_price = latest["close"]
                     prev_close = prev["close"]
@@ -281,11 +281,16 @@ elif mode == "Live Signals":
 
                     # Signal alert
                     if signal_row["entry_signal"]:
-                        st.success(f"🚦 **ENTRY SIGNAL** — EMA {ema_fast} crossed above EMA {ema_slow}!")
+                        st.success(f"🚦 **ENTRY SIGNAL** — EMA {ema_fast} just crossed above EMA {ema_slow}!")
                     elif signal_row["exit_signal"]:
-                        st.error(f"🚦 **EXIT SIGNAL** — EMA {ema_fast} crossed below EMA {ema_slow}!")
+                        st.error(f"🚦 **EXIT SIGNAL** — EMA {ema_fast} just crossed below EMA {ema_slow}!")
                     else:
-                        st.info("⏸️ No cross signal — holding current position.")
+                        fast_vs_slow = "above" if ema_fast_val > ema_slow_val else "below"
+                        st.info(
+                            f"⏸️ No new cross signal today. "
+                            f"EMA {ema_fast} (${ema_fast_val:,.2f}) is {fast_vs_slow} EMA {ema_slow} (${ema_slow_val:,.2f}). "
+                            f"Position remains unchanged."
+                        )
 
                     # Mini chart
                     chart_key = f"live_chart_{refresh_counter}"
